@@ -1,0 +1,30 @@
+# Node dependencies & web builds
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Rust & Tauri build artifacts
+target/
+src-tauri/target/
+
+# Python cache & artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Sensitive data & local state
+profiles.json
+settings.json
+*.token
+*.bak
+*.bak.*
+*.log
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

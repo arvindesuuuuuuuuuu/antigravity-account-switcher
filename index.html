@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Antigravity Account Switcher</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app" class="app-container">
+      <!-- App Header -->
+      <header class="app-header">
+        <div class="brand">
+          <div class="logo-orb">
+            <div class="logo-inner"></div>
+          </div>
+          <div class="brand-text">
+            <h1>Antigravity</h1>
+            <span class="subtext">Desktop Account Switcher</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="refreshQuotaBtn" class="icon-btn" title="Refresh Live Quotas from Google API">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+            </svg>
+          </button>
+          <button id="settingsBtn" class="icon-btn" title="Settings">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Active Account Hero Card -->
+      <section class="hero-section">
+        <div class="section-label">CURRENT ACTIVE ANTIGRAVITY ACCOUNT</div>
+        <div class="active-card" id="activeAccountCard">
+          <div class="avatar-container">
+            <img id="activeAvatar" class="avatar-img" src="" alt="Avatar" style="display:none;" />
+            <div id="activeAvatarFallback" class="avatar-fallback">?</div>
+            <span class="active-badge" title="Active in Antigravity Desktop"></span>
+          </div>
+          <div class="account-details">
+            <div class="account-name-row">
+              <h2 id="activeName">Detecting...</h2>
+              <span id="activeTier" class="tier-pill">Tier</span>
+            </div>
+            <p id="activeEmail" class="account-email">Checking local state...</p>
+            <div class="account-meta">
+              <span id="savedStatusBadge" class="meta-tag">Saved Profile</span>
+              <span id="rateLimitBadge" class="meta-tag health-ok">Quota Available</span>
+              <span id="promptCreditsBadge" class="meta-tag credits-tag" style="display:none;"></span>
+              <span id="flowCreditsBadge" class="meta-tag credits-tag" style="display:none;"></span>
+            </div>
+
+            <!-- Live Model Usage Breakdown (Antigravity Models) -->
+            <div class="model-usage-section" id="activeModelGroupsSection">
+              <div class="model-usage-header">
+                <span class="usage-title">USAGE BY MODEL GROUP</span>
+                <span class="live-pill" id="liveRpcIndicator">● Live RPC</span>
+              </div>
+              <div class="model-groups-grid" id="activeModelGroupsList">
+                <!-- Dynamically rendered: Gemini Models, Claude & GPT Models, Gemini 4 Argon -->
+              </div>
+            </div>
+          </div>
+          <div class="active-actions">
+            <button id="saveCurrentBtn" class="btn btn-secondary btn-sm" title="Save current session as named profile">
+              + Save
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Auto-Switch When Usage Runs Out Banner -->
+      <section class="auto-switch-banner">
+        <div class="auto-switch-content">
+          <div class="auto-switch-icon">⚡</div>
+          <div class="auto-switch-info">
+            <div class="auto-switch-title">When Usage Runs Out</div>
+            <div class="auto-switch-desc" id="autoSwitchDesc">
+              Auto-switches to the next available Google account upon rate-limit / HTTP 429 exhaustion.
+            </div>
+          </div>
+        </div>
+        <div class="auto-switch-ctrl">
+          <label class="switch">
+            <input type="checkbox" id="autoSwitchToggle" checked />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Saved Accounts Section -->
+      <section class="profiles-section">
+        <div class="profiles-header">
+          <div class="section-label">SAVED GOOGLE ACCOUNTS (<span id="profileCount">0</span>)</div>
+          <div class="header-btns">
+            <button id="quickSwitchNextBtn" class="btn btn-primary btn-sm">
+              ⚡ Next Account
+            </button>
+            <button id="addAccountBtn" class="btn btn-outline btn-sm">
+              + Add Account
+            </button>
+          </div>
+        </div>
+
+        <div id="profilesList" class="profiles-list">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">👥</div>
+            <h3>No profiles saved yet</h3>
+            <p>Click "Save" above to capture your current signed-in Google account!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Toast Container -->
+      <div id="toastContainer" class="toast-container"></div>
+
+      <!-- Add Account Modal -->
+      <div id="addModal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>Add Google Account Profile</h3>
+            <button id="closeModalBtn" class="close-btn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="modal-tabs">
+              <button id="tabCaptureBtn" class="modal-tab-btn active">Capture Current Session</button>
+              <button id="tabTokenBtn" class="modal-tab-btn">Enter Token / JSON</button>
+            </div>
+
+            <!-- Tab 1: Capture Active Account -->
+            <div id="tabCaptureContent">
+              <p class="modal-hint">
+                Capture the currently active Google account from Antigravity and assign a friendly label.
+              </p>
+              <div class="form-group">
+                <label for="profileLabelInput">Profile Label</label>
+                <input type="text" id="profileLabelInput" placeholder="e.g. Personal Account" />
+              </div>
+              <div class="wizard-box">
+                <div class="wizard-title">How to add additional Google Accounts:</div>
+                <ol class="wizard-steps">
+                  <li>Save your current active account above.</li>
+                  <li>In <strong>Antigravity</strong>, sign in with your second Google account.</li>
+                  <li>Open this switcher and click <strong>"Capture Current Session"</strong> to save it!</li>
+                  <li>Antigravity's supervisor hot-reloads language_server seamlessly when switching.</li>
+                </ol>
+              </div>
+            </div>
+
+            <!-- Tab 2: Manual Token Input -->
+            <div id="tabTokenContent" style="display:none;">
+              <p class="modal-hint">
+                Import an account by pasting its access & refresh tokens or full token JSON.
+              </p>
+              <div class="form-group">
+                <label for="tokenLabelInput">Account Label</label>
+                <input type="text" id="tokenLabelInput" placeholder="e.g. Work Account" />
+              </div>
+              <div class="form-group">
+                <label for="tokenEmailInput">Google Email</label>
+                <input type="email" id="tokenEmailInput" placeholder="name@gmail.com" />
+              </div>
+              <div class="form-group">
+                <label for="tokenAccessInput">Access Token (Bearer)</label>
+                <input type="text" id="tokenAccessInput" placeholder="ya29.a0..." />
+              </div>
+              <div class="form-group">
+                <label for="tokenRefreshInput">Refresh Token</label>
+                <input type="text" id="tokenRefreshInput" placeholder="1//0..." />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="cancelModalBtn" class="btn btn-secondary">Cancel</button>
+            <button id="confirmSaveProfileBtn" class="btn btn-primary">Save Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Modal -->
+      <div id="settingsModal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h3>Antigravity Switcher Settings</h3>
+            <button id="closeSettingsBtn" class="close-btn">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Default Rate-Limit Cooldown Window</label>
+              <select id="cooldownSelect">
+                <option value="60">1 Hour</option>
+                <option value="180">3 Hours</option>
+                <option value="300" selected>5 Hours (Standard Google/Gemini 5h Window)</option>
+                <option value="720">12 Hours</option>
+                <option value="1440">24 Hours</option>
+              </select>
+            </div>
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" id="notifySwitchCheckbox" checked />
+                Show desktop notifications when accounts switch
+              </label>
+            </div>
+            <div class="diagnostics-box">
+              <div class="diag-title">Antigravity Target (Classic Desktop Only)</div>
+              <div class="diag-item">
+                <span class="diag-key">Storage:</span>
+                <span class="diag-val" id="diagStoragePath">~/.config/Antigravity</span>
+              </div>
+              <div class="diag-item">
+                <span class="diag-key">Language Server:</span>
+                <span class="diag-val" id="diagLogPath">Hot-reload supervisor attached</span>
+              </div>
+              <div class="diag-item">
+                <span class="diag-key">Quota API:</span>
+                <span class="diag-val">daily-cloudcode-pa.googleapis.com</span>
+              </div>
+            </div>
+            <div class="tip-box">
+              💡 <strong>Antigravity Hot-Switching:</strong> When switching accounts, Antigravity's built-in supervisor restarts the AI <code>language_server</code> in ~2 seconds with the new credentials. Your workspace, tabs, and conversation remain open and undisturbed!
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
